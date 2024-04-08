@@ -10,14 +10,15 @@ rows = soup.findAll(class_='stock-info')
 
 data = []
 for row in rows:
-    product_title = row.find(class_="???????????????????").get_text()
-    price_div = row.find(class_=" ????????????? ").get_text()
-    data.append([product_title, price_div])
+    stock_title = row.find(class_="mb-2.5 text-left text-xl font-bold leading-7 text-[#232526] md:mb-2 md:text-3xl md:leading-8 rtl:soft-ltr").get_text()
+    price_div = row.find(class_="text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]").get_text()
+    data.append([stock_title, price_div])
 
 df = pd.DataFrame(data, columns=['Stock Name', 'Price'])
+print(df)
 
 # Specify the full path where you want to save the CSV file
-file_path = os.path.join(os.getcwd(), 'scraped_data.csv')
+# file_path = os.path.join(os.getcwd(), 'scraped_data.csv')
 
-df.to_csv(file_path, index=False)
-print("CSV file saved at:", file_path)
+# df.to_csv(file_path, index=False)
+# print("CSV file saved at:", file_path)
