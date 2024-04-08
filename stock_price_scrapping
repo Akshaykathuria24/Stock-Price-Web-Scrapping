@@ -1,0 +1,23 @@
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import os
+
+url = requests.get("https://www.investing.com/equities/apple-computer-inc")
+soup = BeautifulSoup(url.content, 'html.parser')
+rows = soup.findAll(class_='stock-info')
+
+data = []
+for row in rows:
+    product_title = row.find(class_="???????????????????").get_text()
+    price_div = row.find(class_=" ????????????? ").get_text()
+    data.append([product_title, price_div])
+
+df = pd.DataFrame(data, columns=['Stock Name', 'Price'])
+
+# Specify the full path where you want to save the CSV file
+file_path = os.path.join(os.getcwd(), 'scraped_data.csv')
+
+df.to_csv(file_path, index=False)
+print("CSV file saved at:", file_path)
