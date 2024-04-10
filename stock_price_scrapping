@@ -6,16 +6,28 @@ import os
 
 url = requests.get("https://www.investing.com/equities/apple-computer-inc")
 soup = BeautifulSoup(url.content, 'html.parser')
-rows = soup.findAll(class_='stock-info')
+rows = soup.findAll(class_='text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]')
 
-data = []
-for row in rows:
-    stock_title = row.find(class_="mb-2.5 text-left text-xl font-bold leading-7 text-[#232526] md:mb-2 md:text-3xl md:leading-8 rtl:soft-ltr").get_text()
-    price_div = row.find(class_="text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]").get_text()
-    data.append([stock_title, price_div])
+# print(len(rows))  
 
-df = pd.DataFrame(data, columns=['Stock Name', 'Price'])
-print(df)
+# for row in rows:
+    # print(row)
+     
+if rows:
+    price = rows.get_text()
+    print("Price:", price)
+else:
+    print("Price not found")
+
+
+# data = []
+# for row in rows:
+    # stock_title = row.find(class_="mb-2.5 text-left text-xl font-bold leading-7 text-[#232526] md:mb-2 md:text-3xl md:leading-8 rtl:soft-ltr").get_text()
+    # price_div = row.find(class_="text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]").get_text()
+    # data.append([stock_title, price_div])
+
+# df = pd.DataFrame(data, columns=['Stock Name', 'Price'])
+# print(df)
 
 # Specify the full path where you want to save the CSV file
 # file_path = os.path.join(os.getcwd(), 'scraped_data.csv')
