@@ -1,3 +1,4 @@
+from wsgiref import headers
 import pandas as pd
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,40 +9,20 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 
-url = requests.get("https://www.moneycontrol.com/commodity/international-gold-price?symbol=XAUUSD:CUR")
-response = requests.get(url)
-
-soup = BeautifulSoup(response.text, 'html.parser')
-print(soup.title.text)
-
-
-
-
-# url = requests.get("https://www.moneycontrol.com/commodity/international-gold-price?symbol=XAUUSD:CUR")
-# soup = BeautifulSoup(url.content, 'html.parser')
-# # rows = soup.findAll(class_='text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]')
-# soup2 = requests.get(url)
-# print(soup2)
-
-     
-# if rows:
-#     price = rows.get_text()
-#     print("Price:", price)
-# else:
-#     print("Price not found")
-
-
-# data = []
-# for row in rows:
-    # stock_title = row.find(class_="mb-2.5 text-left text-xl font-bold leading-7 text-[#232526] md:mb-2 md:text-3xl md:leading-8 rtl:soft-ltr").get_text()
-    # price_div = row.find(class_="text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]").get_text()
-    # data.append([stock_title, price_div])
-
-# df = pd.DataFrame(data, columns=['Stock Name', 'Price'])
-# print(df)
-
-# Specify the full path where you want to save the CSV file
-# file_path = os.path.join(os.getcwd(), 'scraped_data.csv')
-
-# df.to_csv(file_path, index=False)
-# print("CSV file saved at:", file_path)
+url = requests.get("https://www.investing.com/equities/apple-computer-inc")
+soup = BeautifulSoup(url.content, "html.parser")
+stocks = soup.find(class_="quick")
+all=[] 
+for url in url: 
+    page = requests.get(url, headers=headers) 
+    try: 
+        soup = BeautifulSoup(page.text, 'html.parser') 
+        company = soup.find('h1', {'class': 'text-2xl font-semibold instrument-header_title__gCaMF mobile:mb-2'}).text 
+        price = soup.find('div', {'class': 'instrument-price_instrument-price__xfgbB flex items-end flex-wrap font-bold'}).find_all('span')[0].text 
+        change = soup.find('div', {'class': 'instrument-price_instrument-price__xfgbB flex items-end flex-wrap font-bold'}).find_all('span')[2].text 
+        volume = soup.find('div', {'class': 'trading-hours_value__5_NnB'}).text 
+        x = [company, price, change, volume] 
+        all.append(x) 
+          
+    except AttributeError: 
+        print("Change the Element id")
