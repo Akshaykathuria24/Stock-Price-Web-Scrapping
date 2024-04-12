@@ -1,4 +1,3 @@
-from wsgiref import headers
 import pandas as pd
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,22 +6,62 @@ import re
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-
-
-url = requests.get("https://www.investing.com/equities/apple-computer-inc")
-soup = BeautifulSoup(url.content, "html.parser")
-stocks = soup.find(class_="quick")
-all=[] 
-for url in url: 
-    page = requests.get(url, headers=headers) 
-    try: 
-        soup = BeautifulSoup(page.text, 'html.parser') 
-        company = soup.find('h1', {'class': 'text-2xl font-semibold instrument-header_title__gCaMF mobile:mb-2'}).text 
-        price = soup.find('div', {'class': 'instrument-price_instrument-price__xfgbB flex items-end flex-wrap font-bold'}).find_all('span')[0].text 
-        change = soup.find('div', {'class': 'instrument-price_instrument-price__xfgbB flex items-end flex-wrap font-bold'}).find_all('span')[2].text 
-        volume = soup.find('div', {'class': 'trading-hours_value__5_NnB'}).text 
-        x = [company, price, change, volume] 
-        all.append(x) 
-          
-    except AttributeError: 
-        print("Change the Element id")
+import os
+resp = requests.get("https://goldpricez.com/")
+data = resp.text
+soup = BeautifulSoup(data)
+links= soup.find_all('ul',attrs={'class':"menu_panel"})[0].find_all('a')
+links[0]['href']
+LinksOfPrice=[]
+for i in range(len(links)):
+    LinksOfPrice.append(links[i]['href'])
+links2= soup.find_all('ul',attrs={'class':"menu_panel"})[1].find_all('a')
+for i in range(len(links2)):
+    LinksOfPrice.append(links2[i]['href'])
+resp = requests.get("https://goldpricez.com/us/gram")
+data = resp.text
+soup = BeautifulSoup(data)
+soup.find('h1')
+len('Gold Price  Today  in ')
+soup.find('h1').text[22:].strip()
+soup.find('div',attrs={'class':'col c9'}).findAll('span')[1].text.strip()[1:].strip()
+soup.find('div',attrs={'class':'col c9'}).find_all('span')[3].text[10:].strip()
+mylist = soup.findAll('div',attrs={'class':'col c9'})[7].findAll('td')
+pl=[]
+for i in range(1,len(mylist),3):
+    pl.append(mylist[i].text[1:].strip())
+dictt = {'Country': [],
+              "price per 24k": [],
+              "price per 23k": [],
+              "price per 22k": [],
+              "price per 21k": [],
+              "price per 18k": [],
+              "price per 14k": [],
+              "price per 10k": [],
+              "price per 9k": [],
+              "price per 8k": [],
+              "price per 6k": [],
+              "change to usd": []}
+list(dictt.keys())[1:11]
+for link in LinksOfPrice:
+    resp = requests.get(link)
+    data = resp.text
+    soup = BeautifulSoup(data)
+    try:
+        Country = soup.find('div',attrs={'class':'col c9'}).find('h1').text[22:].strip()
+        change = soup.find('div',attrs={'class':'col c9'}).find('tbody').findAll('td')[3].text[1:].strip()
+        dictt['Country'].append(Country)
+        dictt['change to usd'].append(change)
+        mylist = soup.findAll('div',attrs={'class':'col c9'})[7].findAll('td')
+        lp= []
+        for i in range(1, len(mylist), 3):
+            lp.append(mylist[i].text[1:].strip())
+        x= 0
+        for key in list(dictt.keys())[1:11]:
+            dictt[key].append(lp[x])
+            x+= 1
+    except:
+        LinksOfPrice.remove(link)
+df = pd.DataFrame(dictt)
+df['change to usd'].iloc[0]= 1
+print(df)
